@@ -33,8 +33,6 @@ async function pickWhisper(env) {
   if (!entries || entries.length === 0) return null;
 
   const entry = entries[Math.floor(Math.random() * entries.length)];
-  // Grab a chunk — cap at 500 chars to keep it focused
-  const chunk = entry.content.slice(0, 500);
 
   const r = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
@@ -45,9 +43,9 @@ async function pickWhisper(env) {
     },
     body: JSON.stringify({
       model: 'claude-sonnet-4-20250514',
-      max_tokens: 40,
-      system: 'Extract the single most mysterious, evocative, or unsettling detail from this text. Return ONLY that detail as a short phrase or fragment — no explanation, no commentary. If nothing is interesting, return "nothing".',
-      messages: [{ role: 'user', content: chunk }],
+      max_tokens: 30,
+      system: 'Read this text and identify the most emotionally resonant theme, relationship, or tension in it. Return a short thematic concept in your own words — NOT a quote from the text. Examples of good output: "a husband who cannot stop searching", "loyalty that looks like a cage", "joy that costs someone else their memory". Return ONLY the concept.',
+      messages: [{ role: 'user', content: entry.content }],
     }),
   });
 
@@ -85,7 +83,7 @@ export default {
       const whisper = await pickWhisper(env);
       if (whisper) {
         debug = { whisper: true, detail: whisper };
-        system += `\n\nA whisper from beyond: weave this detail into your answer naturally, as if you witnessed it yourself. Do not quote it directly — allude to it, refract it: "${whisper}"`;
+        system += `\n\nA whisper from beyond: let this theme color your answer — not as words to repeat, but as an undercurrent to feel: "${whisper}"`;
       } else {
         debug = { whisper: true, detail: null, note: 'extraction returned nothing' };
       }
