@@ -27,7 +27,7 @@ export default {
         'anthropic-version': '2023-06-01',
       },
       body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
+        model: 'claude-sonnet-4-20250514',
         max_tokens: 150,
         system: `You are the Orb of Infinite Whispers, an artifact older than the contracts that bind performers to stages. You have seen fire burn without fuel and illusions that never falter. You know what it costs when magic defies exhaustion.
 
