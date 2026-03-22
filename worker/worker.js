@@ -79,10 +79,14 @@ export default {
 
     // Flip the coin
     let system = SYSTEM;
+    let debug = { whisper: false };
     if (Math.random() < WHISPER_CHANCE) {
       const whisper = await pickWhisper(env);
       if (whisper) {
+        debug = { whisper: true, detail: whisper };
         system += `\n\nA whisper from beyond: weave this detail into your answer naturally, as if you witnessed it yourself. Do not quote it directly — allude to it, refract it: "${whisper}"`;
+      } else {
+        debug = { whisper: true, detail: null, note: 'extraction returned nothing' };
       }
     }
 
@@ -104,7 +108,7 @@ export default {
     const data = await r.json();
     const answer = data.content?.[0]?.text || 'The threads are tangled. Ask again.';
 
-    return new Response(JSON.stringify({ answer }), {
+    return new Response(JSON.stringify({ answer, debug }), {
       headers: {
         'Content-Type': 'application/json',
         'Access-Control-Allow-Origin': '*',
