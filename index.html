@@ -100,7 +100,7 @@ async function ask() {
       body: JSON.stringify({ question: q })
     });
     const data = await r.json();
-    res.innerHTML = '<span style="color:#6a5a80;font-size:0.95rem">' + leadIn + '</span><br><br>' + data.answer;
+    res.innerHTML = '<span style="color:#6a5a80;font-size:1.1rem">' + leadIn + '</span><br><br>' + data.answer;
   } catch (e) {
     console.error('Orb error:', e);
     res.textContent = 'The Orb flickers and dims. Try again.';
