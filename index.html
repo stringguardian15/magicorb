@@ -135,6 +135,7 @@ async function ask() {
       })
     });
     const data = await r.json();
+    console.log('Orb response:', r.status, data);
     if (data.content) {
       res.textContent = data.content[0].text;
     } else {
