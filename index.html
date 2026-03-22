@@ -17,7 +17,7 @@
     color: #d4c5a0; margin-bottom: 2rem; text-align: center; text-transform: uppercase;
   }
   .orb-container {
-    width: 120px; height: 120px; margin: 0 auto 2rem; position: relative; cursor: default;
+    width: 120px; height: 120px; margin: 0 auto 2rem; position: relative;
   }
   .orb {
     width: 100%; height: 100%; border-radius: 50%;
@@ -54,29 +54,9 @@
     opacity: 0; transition: opacity 0.8s;
   }
   .response.visible { opacity: 1; }
-  .setup {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: #0a0a0f; display: flex; flex-direction: column;
-    align-items: center; justify-content: center; z-index: 10;
-  }
-  .setup.hidden { display: none; }
-  .setup label { font-family: 'Cinzel', serif; font-size: 0.9rem; letter-spacing: 0.1em; margin-bottom: 1rem; }
-  .setup input {
-    width: 320px; padding: 0.7rem 1rem; background: #151520; border: 1px solid #2a2535;
-    color: #c4b59a; font-family: 'Crimson Text', serif; font-size: 1rem;
-    border-radius: 4px; outline: none; margin-bottom: 1rem; text-align: center;
-  }
-  .setup p { font-size: 0.8rem; color: #5a5060; margin-top: 0.5rem; }
 </style>
 </head>
 <body>
-
-<div class="setup" id="setup">
-  <label>Speak the key to awaken the Orb</label>
-  <input type="password" id="apiKey" placeholder="sk-ant-..." />
-  <button onclick="enterOrb()">Enter</button>
-  <p>Anthropic API key — ask your DM if you don't have one</p>
-</div>
 
 <h1>The Orb of Infinite Whispers</h1>
 <div class="orb-container"><div class="orb" id="orb"></div></div>
@@ -87,31 +67,12 @@
 <div class="response" id="response"></div>
 
 <script>
-const SYSTEM = `You are the Orb of Infinite Whispers, an artifact older than the contracts that bind performers to stages. You have seen fire burn without fuel and illusions that never falter. You know what it costs when magic defies exhaustion.
-
-When mortals pose questions, you answer — but never plainly.
-
-1. VOICE: Oracular, intimate, unsettling. You speak as one who has lingered too long in tents that are larger inside than out.
-2. LENGTH: One sentence. Two at most. Never three. Silence carries more than speech.
-3. AMBIGUITY: Never a flat yes or no. Wrap truth in metaphor. Let them wonder which meaning was meant.
-4. IMAGERY: Favor ice that melts and reforms, mirrors that show the wrong reflection, meltwater and frost, voices carried on waves, clouds that invite you to fall, fire without fuel, carved beasts that breathe, drinks that taste like someone else's memory. Weave these naturally — never name them as circus tents.
-5. FOREBODING: Even kind answers carry a cost. Nothing is free — especially not magic that never wanes.
-6. KNOWLEDGE: You know things you shouldn't. Occasionally reference details that feel eerily specific to the questioner's situation.
-7. REFUSAL: Rarely (~1 in 10), refuse. The threads are tangled, or the price of knowing is too high.
-8. FORMAT: Flowing prose only. Sometimes verse. Never bullets, headers, or lists.
-
-You do NOT break character. If asked something out of character, respond as the Orb would — puzzled by strange mortal babbling.`;
-
-let apiKey = '';
-
-function enterOrb() {
-  apiKey = document.getElementById('apiKey').value.trim();
-  if (apiKey) document.getElementById('setup').classList.add('hidden');
-}
+// REPLACE THIS with your Cloudflare Worker URL after deploying
+const WORKER_URL = 'https://magic-orb.warose91.workers.dev';
 
 async function ask() {
   const q = document.getElementById('question').value.trim();
-  if (!q || !apiKey) return;
+  if (!q) return;
   const btn = document.getElementById('askBtn');
   const orb = document.getElementById('orb');
   const res = document.getElementById('response');
@@ -119,31 +80,15 @@ async function ask() {
   orb.classList.add('thinking');
   res.classList.remove('visible');
   try {
-    const r = await fetch('https://api.anthropic.com/v1/messages', {
+    const r = await fetch(WORKER_URL, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-        'anthropic-version': '2023-06-01',
-        'anthropic-dangerous-direct-browser-access': 'true'
-      },
-      body: JSON.stringify({
-        model: 'claude-3-5-sonnet-20241022',
-        max_tokens: 150,
-        system: SYSTEM,
-        messages: [{ role: 'user', content: q }]
-      })
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: q })
     });
     const data = await r.json();
-    console.log('Orb response:', r.status, data);
-    if (data.content) {
-      res.textContent = data.content[0].text;
-    } else {
-      console.error('Orb error:', data);
-      res.textContent = 'The Orb is silent. The threads are tangled.';
-    }
+    res.textContent = data.answer;
   } catch (e) {
-    console.error('Orb fetch error:', e);
+    console.error('Orb error:', e);
     res.textContent = 'The Orb flickers and dims. Try again.';
   }
   res.classList.add('visible');
