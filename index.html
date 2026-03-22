@@ -128,7 +128,7 @@ async function ask() {
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
+        model: 'claude-3-5-sonnet-20241022',
         max_tokens: 150,
         system: SYSTEM,
         messages: [{ role: 'user', content: q }]
@@ -138,9 +138,11 @@ async function ask() {
     if (data.content) {
       res.textContent = data.content[0].text;
     } else {
+      console.error('Orb error:', data);
       res.textContent = 'The Orb is silent. The threads are tangled.';
     }
-  } catch {
+  } catch (e) {
+    console.error('Orb fetch error:', e);
     res.textContent = 'The Orb flickers and dims. Try again.';
   }
   res.classList.add('visible');
