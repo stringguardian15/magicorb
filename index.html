@@ -70,6 +70,19 @@
 // REPLACE THIS with your Cloudflare Worker URL after deploying
 const WORKER_URL = 'https://magic-orb.warose91.workers.dev';
 
+const LEAD_INS = [
+  'The Orb stirs…',
+  'A light flickers within…',
+  'The surface darkens…',
+  'Something shifts inside…',
+  'The whispers converge…',
+  'Frost crawls across the glass…',
+  'The Orb hums, low and deep…',
+  'A shape moves beneath the surface…',
+  'The air grows cold…',
+  'For a moment, you see your reflection. It is not smiling…',
+];
+
 async function ask() {
   const q = document.getElementById('question').value.trim();
   if (!q) return;
@@ -79,6 +92,7 @@ async function ask() {
   btn.disabled = true;
   orb.classList.add('thinking');
   res.classList.remove('visible');
+  const leadIn = LEAD_INS[Math.floor(Math.random() * LEAD_INS.length)];
   try {
     const r = await fetch(WORKER_URL, {
       method: 'POST',
@@ -86,7 +100,7 @@ async function ask() {
       body: JSON.stringify({ question: q })
     });
     const data = await r.json();
-    res.textContent = data.answer;
+    res.innerHTML = '<span style="color:#6a5a80;font-size:0.95rem">' + leadIn + '</span><br><br>' + data.answer;
   } catch (e) {
     console.error('Orb error:', e);
     res.textContent = 'The Orb flickers and dims. Try again.';
