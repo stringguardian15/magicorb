@@ -1,0 +1,21 @@
+package.DnD-Magic-8-Ball = {
+    interfaces = (1.0);
+    build-system = aim-build;
+
+    build-tools = {
+        1.0 = {
+            AIMBuild = 1.0;
+        };
+    };
+
+    dependencies = {
+        1.0 = {
+        };
+    };
+
+    targets = {
+        DnD-Magic-8-Ball = {
+            type = ai-capabilities;
+        };
+    };
+};
